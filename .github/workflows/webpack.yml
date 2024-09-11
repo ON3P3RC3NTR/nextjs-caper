@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+name: NodeJS with Next.js and Webpack
 
 on:
   push:
@@ -15,20 +15,34 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'  # Caching npm dependencies for faster builds
-          cache-dependency-path: 'package-lock.json'  # Specify path for cache
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'  # Caching npm dependencies for faster builds
+        cache-dependency-path: 'package-lock.json'  # Specify path for cache
+        always-auth: false
+        registry-url: ''
+        scope: ''
+        architecture: ''
+        check-latest: false
+        token: ${{ secrets.GH_DOTCOM_TOKEN }}
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install dependencies
+      run: npm install
 
-      - name: Build with Webpack
-        run: npx webpack
+    - name: Build with Webpack
+      run: npx webpack
 
-      - name: Run tests
-        run: npm test
+    - name: Generate artifact attestation
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-path: 'path/to/your/artifact'
+
+    - name: Run tests
+      run: npm test
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GH_DOTCOM_TOKEN }}
+
