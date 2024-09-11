@@ -22,16 +22,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'  # Caching npm dependencies for faster builds
-        cache-dependency-path: 'package-lock.json'  # Specify path for cache
-        always-auth: false
-        registry-url: ''
-        scope: ''
-        architecture: ''
-        check-latest: false
-        token: ${{ secrets.GH_DOTCOM_TOKEN }}
+        cache-dependency-path: '**/package-lock.json'  # Use wildcard to ensure path resolution
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci  # Use npm ci for clean install
 
     - name: Build with Webpack
       run: npx webpack
